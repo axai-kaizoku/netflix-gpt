@@ -1,7 +1,9 @@
+import Body from './components/layout/body';
+
 function App() {
 	return (
 		<>
-			<h1 className="text-4xl underline font-bold">Heyy y'll </h1>
+			<Body />
 		</>
 	);
 }
