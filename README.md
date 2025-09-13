@@ -1,14 +1,21 @@
 ## Netflix GPT
 
-- [ ] Create vite app
-- [ ] Add tailwind
+- [x] Create vite app
+- [x] Add tailwind
+- [x] Routing
+- [x] Login form
+- [x] Signup form
+- [x] Form validation
+- [x] useRef hook
+- [ ] setup firebase
+- [ ] host your app to firebase
 
 ---
 
 # Features
 
-- [ ] Login/Signup page
-  - [ ] SignIn/Signup form
+- [x] Login/Signup page
+  - [x] SignIn/Signup form
   - [ ] redirect to browse page
 - [ ] Browse (after auth)
   - [ ] Header
