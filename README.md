@@ -7,8 +7,8 @@
 - [x] Signup form
 - [x] Form validation
 - [x] useRef hook
-- [ ] setup firebase
-- [ ] host your app to firebase
+- [x] setup firebase
+- [x] host your app to firebase
 
 ---
 

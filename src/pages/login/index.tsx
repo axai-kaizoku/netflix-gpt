@@ -3,15 +3,21 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useRef, useState } from 'react';
 
+interface ValidationErrors {
+	name?: string;
+	email?: string;
+	password?: string;
+}
+
+interface FormData {
+	name?: string;
+	email: string;
+	password: string;
+}
+
 export default function Login() {
 	return (
-		<main className="w-full relative flex flex-col">
-			<div className="absolute inset-0 -z-10">
-				<img
-					src="https://assets.nflxext.com/ffe/siteui/vlv3/0b0dad79-ad4d-42b7-b779-8518da389976/web/IN-en-20250908-TRIFECTA-perspective_0647b106-80e1-4d25-9649-63099752b49a_large.jpg"
-					alt="netflix bg"
-				/>
-			</div>
+		<main className="w-full relative flex flex-col bg-[url(https://assets.nflxext.com/ffe/siteui/vlv3/0b0dad79-ad4d-42b7-b779-8518da389976/web/IN-en-20250908-TRIFECTA-perspective_0647b106-80e1-4d25-9649-63099752b49a_large.jpg)] bg-cover">
 			<header className="w-full px-20 bg-gradient-to-b from-black">
 				<img
 					src="https://help.nflxext.com/helpcenter/OneTrust/oneTrust_production_2025-08-26/consent/87b6a5c0-0104-4e96-a291-092c11350111/0198e689-25fa-7d64-bb49-0f7e75f898d2/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png"
@@ -20,7 +26,7 @@ export default function Login() {
 					height={50}
 				/>
 			</header>
-			<div className="h-[80vh] flex justify-center items-center">
+			<div className="min-h-[70vh] h-full max-h-[80vh] flex justify-center items-center">
 				<LoginForm />
 			</div>
 			<footer className="w-full h-60 bg-neutral-900 text-white py-14 px-20">
@@ -39,58 +45,77 @@ function LoginForm() {
 	const [isSignUpForm, setIsSignUpForm] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
 
-	const nameRef = useRef(null);
-	const emailRef = useRef(null);
-	const passwordRef = useRef(null);
+	const nameRef = useRef<HTMLInputElement>(null);
+	const emailRef = useRef<HTMLInputElement>(null);
+	const passwordRef = useRef<HTMLInputElement>(null);
 
 	function toggleSignUpForm() {
 		setIsSignUpForm((prev) => !prev);
+		setErrorMessage(''); // Clear errors when switching forms
 	}
 
-	function validateSignInForm(name: string, email: string, password: string) {
-		const isValidEmail =
-			/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
-		const isValidPassword =
-			/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(
-				password,
-			);
+	function validateForm(
+		formData: FormData,
+		isSignUp: boolean,
+	): ValidationErrors {
+		const errors: ValidationErrors = {};
 
-		const isValidName = name.trim().length >= 1;
-
-		const error: { email?: string; password?: string; name?: string } = {};
-
-		if (!isValidEmail) {
-			error.email = 'Enter valid email';
+		// Name validation (only for sign up)
+		if (isSignUp) {
+			if (!formData.name || formData.name.trim().length < 2) {
+				errors.name = 'Name must be at least 2 characters long';
+			}
 		}
 
-		if (!isValidPassword) {
-			error.password = 'Enter valid password';
+		// Email validation
+		const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+		if (!formData.email || !emailRegex.test(formData.email)) {
+			errors.email = 'Enter a valid email address';
 		}
 
-		if (!isValidName) {
-			error.name = 'Enter valid name';
+		// Password validation
+		const passwordRegex =
+			/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+		if (!formData.password || !passwordRegex.test(formData.password)) {
+			errors.password =
+				'Password must be at least 8 characters with letters, numbers, and special characters';
 		}
 
-		return error;
+		return errors;
 	}
 
 	function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 
-		const name = nameRef.current?.value;
-		const email = emailRef.current?.value;
-		const password = passwordRef.current?.value;
+		const formData: FormData = {
+			name: nameRef.current?.value || '',
+			email: emailRef.current?.value || '',
+			password: passwordRef.current?.value || '',
+		};
 
-		const res = validateSignInForm(name, email, password);
-		if (res.name) {
-			setErrorMessage(res.name);
-		} else if (res.email) {
-			setErrorMessage(res.email);
-		} else if (res.password) {
-			setErrorMessage(res.password);
-		} else {
-			setErrorMessage('');
+		const errors = validateForm(formData, isSignUpForm);
+
+		// Display the first error found
+		const firstError = Object.values(errors)[0];
+		if (firstError) {
+			setErrorMessage(firstError);
+			return;
 		}
+
+		// Clear error message and proceed
+		setErrorMessage('');
+
+		// Here you would typically make an API call
+		if (isSignUpForm) {
+			console.log('Sign up with:', {
+				name: formData.name,
+				email: formData.email,
+			});
+		} else {
+			console.log('Sign in with:', { email: formData.email });
+		}
+
+		alert(`${isSignUpForm ? 'Sign Up' : 'Sign In'} Success!`);
 	}
 	return (
 		<form
@@ -103,6 +128,7 @@ function LoginForm() {
 				<Input
 					ref={nameRef}
 					type="name"
+					required
 					id="name"
 					name="text"
 					placeholder="Enter your name"
