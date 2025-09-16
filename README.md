@@ -9,6 +9,10 @@
 - [x] useRef hook
 - [x] setup firebase
 - [x] host your app to firebase
+- [x] add auth firebase functions
+- [x] add redux
+- [x] sync redux with auth
+- [x] add (tmdb apis)[https://developer.themoviedb.org/docs/getting-started]
 
 ---
 

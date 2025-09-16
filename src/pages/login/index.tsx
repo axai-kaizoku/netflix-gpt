@@ -1,13 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { cn, jsonStringify } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import {
-	getCurrentUser,
 	loginUser,
 	signUpUser,
+	updateUser as updateUserFirebase,
 } from '@/utils/firebase/userActions';
-import type { User } from 'firebase/auth';
-import { useEffect, useRef, useState } from 'react';
+import { updateUser } from '@/utils/store/slices/userSlice';
+import { useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 interface ValidationErrors {
 	name?: string;
@@ -22,18 +23,6 @@ interface FormData {
 }
 
 export default function Login() {
-	const [user, setUser] = useState<User | null>(null);
-
-	useEffect(() => {
-		const fetchUser = async () => {
-			const res = await getCurrentUser();
-			setUser(res);
-			return res;
-		};
-
-		fetchUser();
-	}, []);
-
 	return (
 		<main className="w-full relative flex flex-col bg-[url(https://assets.nflxext.com/ffe/siteui/vlv3/0b0dad79-ad4d-42b7-b779-8518da389976/web/IN-en-20250908-TRIFECTA-perspective_0647b106-80e1-4d25-9649-63099752b49a_large.jpg)] bg-cover">
 			<header className="w-full px-20 bg-gradient-to-b from-black">
@@ -45,7 +34,6 @@ export default function Login() {
 				/>
 			</header>
 			<div className="min-h-[70vh] h-full max-h-[80vh] flex justify-center items-center">
-				<pre>{jsonStringify(user)}</pre>
 				<LoginForm />
 			</div>
 			<footer className="w-full h-60 bg-neutral-900 text-white py-14 px-20">
@@ -61,6 +49,7 @@ export default function Login() {
 }
 
 function LoginForm() {
+	const dispatch = useDispatch();
 	const [isSignUpForm, setIsSignUpForm] = useState(false);
 	const [errorMessage, setErrorMessage] = useState('');
 
@@ -70,7 +59,7 @@ function LoginForm() {
 
 	function toggleSignUpForm() {
 		setIsSignUpForm((prev) => !prev);
-		setErrorMessage(''); // Clear errors when switching forms
+		setErrorMessage('');
 	}
 
 	function validateForm(
@@ -79,20 +68,17 @@ function LoginForm() {
 	): ValidationErrors {
 		const errors: ValidationErrors = {};
 
-		// Name validation (only for sign up)
 		if (isSignUp) {
 			if (!formData.name || formData.name.trim().length < 2) {
 				errors.name = 'Name must be at least 2 characters long';
 			}
 		}
 
-		// Email validation
 		const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 		if (!formData.email || !emailRegex.test(formData.email)) {
 			errors.email = 'Enter a valid email address';
 		}
 
-		// Password validation
 		const passwordRegex =
 			/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
 		if (!formData.password || !passwordRegex.test(formData.password)) {
@@ -114,22 +100,15 @@ function LoginForm() {
 
 		const errors = validateForm(formData, isSignUpForm);
 
-		// Display the first error found
 		const firstError = Object.values(errors)[0];
 		if (firstError) {
 			setErrorMessage(firstError);
 			return;
 		}
 
-		// Clear error message and proceed
 		setErrorMessage('');
 
-		// Here you would typically make an API call
 		if (isSignUpForm) {
-			// console.log('Sign up with:', {
-			// 	name: formData.name,
-			// 	email: formData.email,
-			// });
 			const res = await signUpUser({
 				email: formData.email,
 				password: formData.password,
@@ -139,15 +118,18 @@ function LoginForm() {
 				setErrorMessage(res.errorContent.message);
 			}
 
-			// const updateRes = await updateUser({
-			// 	name: formData.name ?? '',
-			// });
-
-			console.log(res);
+			updateUserFirebase({
+				name: formData.name ?? '',
+			})
+				.then(() => {
+					dispatch(updateUser({ name: formData.name }));
+				})
+				.catch((error) => {
+					setErrorMessage(error.message);
+				});
 
 			// console.log(updateRes);
 		} else {
-			// console.log('Sign in with:', { email: formData.email });
 			const loginRes = await loginUser({
 				email: formData.email,
 				password: formData.password,
@@ -156,12 +138,9 @@ function LoginForm() {
 			if (loginRes?.error) {
 				setErrorMessage(loginRes.errorContent.message);
 			}
-
-			console.log(loginRes);
 		}
-
-		// alert(`${isSignUpForm ? 'Sign Up' : 'Sign In'} Success!`);
 	}
+
 	return (
 		<form
 			className=" max-w-md w-full h-fit min-h-[50vh] bg-neutral-900/90 text-neutral-50 rounded-sm p-20 space-y-8"

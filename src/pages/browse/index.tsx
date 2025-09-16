@@ -1,25 +1,23 @@
+import { Button } from '@/components/ui/button';
 import { jsonStringify } from '@/lib/utils';
-import { getCurrentUser } from '@/utils/firebase/userActions';
-import { type User } from 'firebase/auth';
-import { useEffect, useState } from 'react';
+import { signOutUser } from '@/utils/firebase/userActions';
+import type { RootState } from '@/utils/store/appStore';
+import { useSelector } from 'react-redux';
 
 export default function Browse() {
-	const [user, setUser] = useState<User | null>(null);
-
-	useEffect(() => {
-		const fetchUser = async () => {
-			const res = await getCurrentUser();
-			setUser(res);
-			return res;
-		};
-
-		fetchUser();
-	}, []);
-
+	const user = useSelector((state: RootState) => state.user);
+	// const selector = { name: 'aks' };
 	return (
 		<div>
 			Browse
 			<pre>{jsonStringify(user)}</pre>
+			<Button
+				size={'sm'}
+				onClick={() => {
+					signOutUser();
+				}}>
+				Signout
+			</Button>
 		</div>
 	);
 }

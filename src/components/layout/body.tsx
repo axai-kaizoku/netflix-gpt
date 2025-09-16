@@ -1,9 +1,34 @@
-import { createBrowserRouter, Outlet } from 'react-router';
+import { auth } from '@/utils/firebase/config';
+import { addUser, removeUser } from '@/utils/store/slices/userSlice';
+import { onAuthStateChanged } from 'firebase/auth';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import {
+	createBrowserRouter,
+	Outlet,
+	RouterProvider,
+	useNavigate,
+} from 'react-router';
 import Browse from '../../pages/browse';
 import Login from '../../pages/login';
-import { RouterProvider } from 'react-router';
 
 function Layout() {
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		onAuthStateChanged(auth, (user) => {
+			if (user) {
+				// user.uid
+				const { email, displayName, uid } = user;
+				dispatch(addUser({ email, name: displayName, uid }));
+				navigate('/browse');
+			} else {
+				dispatch(removeUser());
+				navigate('/');
+			}
+		});
+	}, []);
 	return <Outlet />;
 
 	return (

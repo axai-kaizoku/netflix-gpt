@@ -1,18 +1,24 @@
+import { catchErrorMessage } from '@/lib/utils';
 import {
 	createUserWithEmailAndPassword,
 	onAuthStateChanged,
 	signInWithEmailAndPassword,
+	signOut,
 	updateProfile,
 } from 'firebase/auth';
+import type { UserState } from '../store/slices/userSlice';
 import { auth } from './config';
-import { catchErrorMessage } from '@/lib/utils';
 
 export const getCurrentUser = async () => {
-	console.log(auth.currentUser);
-	return auth.currentUser;
-
-	const res = onAuthStateChanged(auth, (user) => {
-		console.log(user);
+	const res: { user: UserState } = { user: null };
+	onAuthStateChanged(auth, (user) => {
+		if (user) {
+			// user.uid
+			const { email, displayName, uid } = user;
+			res.user = { email, name: displayName, uid };
+		} else {
+			res.user = null;
+		}
 	});
 	return res;
 };
@@ -48,13 +54,26 @@ export const loginUser = async ({
 	}
 };
 
-export const updateUser = async ({ name }: { name: string }) => {
-	const user = await getCurrentUser();
-	if (user) {
-		const res = await updateProfile(user, { displayName: name });
+export const updateUser = async ({
+	name,
+	photoURL,
+}: {
+	name: string;
+	photoURL?: string;
+}) => {
+	try {
+		const res = await updateProfile(auth.currentUser!, {
+			displayName: name,
+			photoURL: photoURL,
+		});
 
 		return res;
-	} else {
-		throw new Error('User not found');
+	} catch (error) {
+		return catchErrorMessage(error);
 	}
+};
+
+export const signOutUser = () => {
+	const res = signOut(auth);
+	return res;
 };
