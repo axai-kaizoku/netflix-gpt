@@ -1,7 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import { useRef, useState } from 'react';
+import { cn, jsonStringify } from '@/lib/utils';
+import {
+	getCurrentUser,
+	loginUser,
+	signUpUser,
+} from '@/utils/firebase/userActions';
+import type { User } from 'firebase/auth';
+import { useEffect, useRef, useState } from 'react';
 
 interface ValidationErrors {
 	name?: string;
@@ -16,6 +22,18 @@ interface FormData {
 }
 
 export default function Login() {
+	const [user, setUser] = useState<User | null>(null);
+
+	useEffect(() => {
+		const fetchUser = async () => {
+			const res = await getCurrentUser();
+			setUser(res);
+			return res;
+		};
+
+		fetchUser();
+	}, []);
+
 	return (
 		<main className="w-full relative flex flex-col bg-[url(https://assets.nflxext.com/ffe/siteui/vlv3/0b0dad79-ad4d-42b7-b779-8518da389976/web/IN-en-20250908-TRIFECTA-perspective_0647b106-80e1-4d25-9649-63099752b49a_large.jpg)] bg-cover">
 			<header className="w-full px-20 bg-gradient-to-b from-black">
@@ -27,6 +45,7 @@ export default function Login() {
 				/>
 			</header>
 			<div className="min-h-[70vh] h-full max-h-[80vh] flex justify-center items-center">
+				<pre>{jsonStringify(user)}</pre>
 				<LoginForm />
 			</div>
 			<footer className="w-full h-60 bg-neutral-900 text-white py-14 px-20">
@@ -84,7 +103,7 @@ function LoginForm() {
 		return errors;
 	}
 
-	function handleSubmit(e: React.FormEvent) {
+	async function handleSubmit(e: React.FormEvent) {
 		e.preventDefault();
 
 		const formData: FormData = {
@@ -107,15 +126,41 @@ function LoginForm() {
 
 		// Here you would typically make an API call
 		if (isSignUpForm) {
-			console.log('Sign up with:', {
-				name: formData.name,
+			// console.log('Sign up with:', {
+			// 	name: formData.name,
+			// 	email: formData.email,
+			// });
+			const res = await signUpUser({
 				email: formData.email,
+				password: formData.password,
 			});
+
+			if (res?.error) {
+				setErrorMessage(res.errorContent.message);
+			}
+
+			// const updateRes = await updateUser({
+			// 	name: formData.name ?? '',
+			// });
+
+			console.log(res);
+
+			// console.log(updateRes);
 		} else {
-			console.log('Sign in with:', { email: formData.email });
+			// console.log('Sign in with:', { email: formData.email });
+			const loginRes = await loginUser({
+				email: formData.email,
+				password: formData.password,
+			});
+
+			if (loginRes?.error) {
+				setErrorMessage(loginRes.errorContent.message);
+			}
+
+			console.log(loginRes);
 		}
 
-		alert(`${isSignUpForm ? 'Sign Up' : 'Sign In'} Success!`);
+		// alert(`${isSignUpForm ? 'Sign Up' : 'Sign In'} Success!`);
 	}
 	return (
 		<form
