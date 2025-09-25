@@ -1,79 +1,65 @@
-import { catchErrorMessage } from '@/lib/utils';
+import { catchErrorMessage } from "@/lib/utils"
 import {
-	createUserWithEmailAndPassword,
-	onAuthStateChanged,
-	signInWithEmailAndPassword,
-	signOut,
-	updateProfile,
-} from 'firebase/auth';
-import type { UserState } from '../store/slices/userSlice';
-import { auth } from './config';
-
-export const getCurrentUser = async () => {
-	const res: { user: UserState } = { user: null };
-	onAuthStateChanged(auth, (user) => {
-		if (user) {
-			// user.uid
-			const { email, displayName, uid } = user;
-			res.user = { email, name: displayName, uid };
-		} else {
-			res.user = null;
-		}
-	});
-	return res;
-};
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+  updateProfile,
+} from "firebase/auth"
+import type { UserState } from "../store/slices/userSlice"
+import { auth } from "./config"
 
 export const signUpUser = async ({
-	email,
-	password,
+  email,
+  password,
 }: {
-	email: string;
-	password: string;
+  email: string
+  password: string
 }) => {
-	try {
-		const res = await createUserWithEmailAndPassword(auth, email, password);
+  try {
+    const res = await createUserWithEmailAndPassword(auth, email, password)
 
-		return res;
-	} catch (error) {
-		return catchErrorMessage(error);
-	}
-};
+    return res
+  } catch (error) {
+    return catchErrorMessage(error)
+  }
+}
 
 export const loginUser = async ({
-	email,
-	password,
+  email,
+  password,
 }: {
-	email: string;
-	password: string;
+  email: string
+  password: string
 }) => {
-	try {
-		const res = await signInWithEmailAndPassword(auth, email, password);
-		return res;
-	} catch (error) {
-		return catchErrorMessage(error);
-	}
-};
+  try {
+    const res = await signInWithEmailAndPassword(auth, email, password)
+    return res
+  } catch (error) {
+    return catchErrorMessage(error)
+  }
+}
 
 export const updateUser = async ({
-	name,
-	photoURL,
+  name,
+  photoURL,
 }: {
-	name: string;
-	photoURL?: string;
+  name: string
+  photoURL?: string
 }) => {
-	try {
-		const res = await updateProfile(auth.currentUser!, {
-			displayName: name,
-			photoURL: photoURL,
-		});
+  try {
+    const res = await updateProfile(auth.currentUser!, {
+      displayName: name,
+      photoURL: photoURL,
+    })
 
-		return res;
-	} catch (error) {
-		return catchErrorMessage(error);
-	}
-};
+    return res
+  } catch (error) {
+    return catchErrorMessage(error)
+  }
+}
 
 export const signOutUser = () => {
-	const res = signOut(auth);
-	return res;
-};
+  const res = signOut(auth)
+  return res
+}

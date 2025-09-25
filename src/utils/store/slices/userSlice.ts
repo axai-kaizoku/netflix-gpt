@@ -1,34 +1,33 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 export type UserState = {
-	user: {
-		uid?: string | null;
-		name?: string | null;
-		email?: string | null;
-	} | null;
-};
+  uid?: string | null;
+  name?: string | null;
+  email?: string | null;
+  photoURL?: string;
+} | null;
 
-const initialState: UserState = { user: null };
+const initialState: UserState = null;
 
 const userSlice = createSlice({
-	name: 'user',
-	initialState: initialState,
-	reducers: {
-		addUser: (_state, action) => {
-			return { user: action.payload };
-		},
-		updateUser: (state, action) => {
-			const updatedUser = {
-				...state.user,
-				...action.payload,
-			};
+  name: "user",
+  initialState: initialState,
+  reducers: {
+    addUser: (_state, action) => {
+      return action.payload;
+    },
+    updateUser: (state, action) => {
+      const updatedUser = {
+        ...(state as UserState),
+        ...action.payload,
+      };
 
-			return { user: updatedUser };
-		},
-		removeUser: () => {
-			return { user: null };
-		},
-	},
+      return updatedUser;
+    },
+    removeUser: () => {
+      return null;
+    },
+  },
 });
 
 export const { addUser, removeUser, updateUser } = userSlice.actions;
