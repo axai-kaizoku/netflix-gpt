@@ -5,3 +5,5 @@ export const NETFLIX_BG =
   "https://assets.nflxext.com/ffe/siteui/vlv3/0b0dad79-ad4d-42b7-b779-8518da389976/web/IN-en-20250908-TRIFECTA-perspective_0647b106-80e1-4d25-9649-63099752b49a_large.jpg";
 
 export const NETFLIX_AVATAR = "https://wallpapers.com/images/hd/netflix-profile-pictures-5yup5hd2i60x7ew3.jpg";
+
+export const BASE_IMG_URL = `https://image.tmdb.org/t/p/w500/`;
