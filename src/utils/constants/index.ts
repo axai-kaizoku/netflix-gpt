@@ -7,3 +7,5 @@ export const NETFLIX_BG =
 export const NETFLIX_AVATAR = "https://wallpapers.com/images/hd/netflix-profile-pictures-5yup5hd2i60x7ew3.jpg";
 
 export const BASE_IMG_URL = `https://image.tmdb.org/t/p/w500/`;
+
+export const SEARCH_API = `http://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q=`;
