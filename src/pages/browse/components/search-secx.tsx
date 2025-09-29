@@ -15,7 +15,7 @@ export const SearchSection = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log(cachedSuggestions);
+      // console.log(cachedSuggestions);
       if (cachedSuggestions?.[searchTerm]) {
         setSuggestions(cachedSuggestions[searchTerm]);
       } else {
@@ -23,7 +23,7 @@ export const SearchSection = () => {
           setSuggestions(data);
           dispatch(
             addSuggestions({
-              [searchTerm]: [data],
+              [searchTerm]: data,
             })
           );
         });

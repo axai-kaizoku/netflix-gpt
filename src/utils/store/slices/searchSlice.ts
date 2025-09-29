@@ -9,15 +9,14 @@ const searchSlice = createSlice({
   initialState,
   reducers: {
     addSuggestions: (state, action) => {
-      // here implement lru last recently used, cache only recent 10 searchResults
       if (state) {
         let newState = { ...(state as unknown as SearchState) };
         Object.entries(newState).length >= 10 && delete newState[Object.keys(newState)[0]];
         newState = { ...newState, ...action.payload };
         return newState as SearchState;
       }
-      const newState = { ...(state as unknown as SearchState), ...action.payload };
-      return newState;
+      const initialSuggestions = { ...(state as unknown as SearchState), ...action.payload };
+      return initialSuggestions;
     },
   },
 });

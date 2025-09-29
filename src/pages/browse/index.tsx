@@ -1,13 +1,12 @@
+import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { useFetchNowPlayingMovies } from "@/hooks/use-fetch-nowplaying-movies";
 import { useFetchPopularMovies } from "@/hooks/use-fetch-popular";
 import { useFetchTrendingMovies } from "@/hooks/use-fetch-trending";
 import { cn } from "@/lib/utils";
-import { NETFLIX_AVATAR, NETFLIX_BG, NETFLIX_LOGO } from "@/utils/constants";
-import { signOutUser } from "@/utils/firebase/userActions";
+import { NETFLIX_BG } from "@/utils/constants";
 import type { RootState } from "@/utils/store/appStore";
 import { toggleIsSearching } from "@/utils/store/slices/movieSlice";
-import type { UserState } from "@/utils/store/slices/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { MovieDetails } from "./components/movie-details";
 import { MovieListSecx } from "./components/movie-list-secx";
@@ -16,7 +15,6 @@ import { VideoContainer } from "./components/video-container";
 
 export default function Browse() {
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.user as UserState);
 
   const movies = useSelector((state: RootState) => state.movie?.nowPlayingMovies);
   const trendingMovies = useSelector((state: RootState) => state.movie?.trendingMovies);
@@ -63,23 +61,11 @@ export default function Browse() {
   return (
     <>
       <main className={`w-full h-full relative flex flex-col bg-black text-white`}>
-        <header className="w-full absolute top-0 px-20 bg-gradient-to-b from-black flex items-center justify-between z-10">
-          <img src={NETFLIX_LOGO} alt="netflix logo" width={150} height={50} />
-          <div className="flex gap-2 items-center">
-            <Button size={"sm"} onClick={() => dispatch(toggleIsSearching())}>
-              {isSearching ? "HomePage" : "Search"}
-            </Button>
-            <img src={user?.photoURL ?? NETFLIX_AVATAR} alt="Avatar" width={50} height={10} />
-            <Button
-              size={"sm"}
-              onClick={() => {
-                signOutUser();
-              }}
-            >
-              Signout
-            </Button>
-          </div>
-        </header>
+        <Header>
+          <Button size={"sm"} onClick={() => dispatch(toggleIsSearching())}>
+            {isSearching ? "HomePage" : "Search"}
+          </Button>
+        </Header>
         <section
           className={cn(
             "min-h-[90vh] h-full w-full max-h-screen flex justify-center items-center z-0 relative",

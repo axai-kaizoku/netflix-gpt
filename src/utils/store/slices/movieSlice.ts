@@ -17,14 +17,25 @@ export type Movie = {
   vote_count: number;
 };
 
+export type MovieDetailsCache = {
+  [key: string]: Movie;
+};
+
 export type MovieState = {
   nowPlayingMovies: Movie[];
   trendingMovies?: Movie[];
   popularMovies?: Movie[];
   isSearching?: boolean;
+  movieDetailsCache?: MovieDetailsCache;
 };
 
-const initialState: MovieState = { nowPlayingMovies: [], isSearching: false };
+const initialState: MovieState = {
+  nowPlayingMovies: [],
+  popularMovies: [],
+  trendingMovies: [],
+  movieDetailsCache: {},
+  isSearching: false,
+};
 
 const movieSlice = createSlice({
   name: "movie",
@@ -54,9 +65,14 @@ const movieSlice = createSlice({
     toggleIsSearching: (state) => {
       state.isSearching = !state.isSearching;
     },
+    addMovieDetailById: (state, action) => {
+      const movieDetailsCacheNew = { ...state.movieDetailsCache, ...action.payload };
+      return { ...state, movieDetailsCache: movieDetailsCacheNew };
+    },
   },
 });
 
-export const { addNowPlayingMovies, toggleIsSearching, addTrendingMovies, addPopularMovies } = movieSlice.actions;
+export const { addNowPlayingMovies, toggleIsSearching, addTrendingMovies, addPopularMovies, addMovieDetailById } =
+  movieSlice.actions;
 
 export default movieSlice.reducer;

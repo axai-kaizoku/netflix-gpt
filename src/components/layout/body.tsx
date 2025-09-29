@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { createBrowserRouter, Outlet, RouterProvider, useNavigate } from "react-router";
 import Browse from "../../pages/browse";
 import Login from "../../pages/login";
+import MoviePage from "@/pages/movie";
 
 function Layout() {
   const dispatch = useDispatch();
@@ -17,7 +18,7 @@ function Layout() {
         // user.uid
         const { email, displayName, uid, photoURL } = user;
         dispatch(addUser({ email, name: displayName, uid, photoURL }));
-        navigate("/browse");
+        // navigate("/browse");
       } else {
         dispatch(removeUser());
         navigate("/");
@@ -48,6 +49,10 @@ export default function Body() {
         {
           path: "/browse",
           element: <Browse />,
+        },
+        {
+          path: "/movie/:id",
+          element: <MoviePage />,
         },
       ],
       errorElement: <>Oops Route not found !!</>,
