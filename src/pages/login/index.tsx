@@ -6,6 +6,7 @@ import { loginUser, signUpUser, updateUser as updateUserFirebase } from "@/utils
 import { updateUser } from "@/utils/store/slices/userSlice";
 import { useRef, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 
 interface ValidationErrors {
   name?: string;
@@ -42,6 +43,7 @@ export default function Login() {
 
 function LoginForm() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isSignUpForm, setIsSignUpForm] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -116,6 +118,7 @@ function LoginForm() {
               photoURL: NETFLIX_AVATAR,
             })
           );
+          navigate("/browse");
         })
         .catch((error) => {
           setErrorMessage(error.message);
@@ -130,7 +133,10 @@ function LoginForm() {
 
       if (loginRes?.error) {
         setErrorMessage(loginRes.errorContent.message);
+        return;
       }
+
+      navigate("/browse");
     }
   }
 

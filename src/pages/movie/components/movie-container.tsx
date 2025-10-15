@@ -115,10 +115,20 @@ export const MovieContainer = ({ movie }: { movie: Movie | null }) => {
     );
   }
   return (
-    <div className="px-10">
-      <div className="flex justify-start w-full">
-        <img src={BASE_IMG_URL + movie.backdrop_path} alt={movie.title} width={800} height={500} className="rounded" />
+    <div className="px-10 w-full">
+      <div className="flex justify-start gap-2  w-full">
+        <img
+          src={BASE_IMG_URL + movie.backdrop_path}
+          alt={movie.title}
+          width={950}
+          height={500}
+          className="rounded w-2/3"
+        />
+        <LiveChat />
       </div>
+
+      <h1 className="text-4xl font-bold my-2">{movie?.title}</h1>
+      <p className="text-lg max-w-3xl">{movie.overview}</p>
       <div>
         <h1 className="text-2xl font-bold my-4">Comments:</h1>
         <CommentsList comments={commentsData} />
@@ -156,3 +166,19 @@ export const Comment = ({ comment }: { comment: (typeof commentsData)[0] }) => {
     </div>
   );
 };
+
+export const LiveChat = () => (
+  <div className="border rounded-lg w-2/6 bg-neutral-900/50">
+    <div className="shadow p-4 border-b">Chat</div>
+    <div className="px-4 h-80 overflow-y-auto">
+      {new Array(20).fill(0).map((_, i) => (
+        <div key={i} className="flex items-center gap-2 my-4">
+          <div className="size-8 rounded-full bg-gray-500" />
+          <div className="font-medium">Akshay</div>
+          <p className="text-sm">Lorem ipsum dolor sit amet .</p>
+        </div>
+      ))}
+    </div>
+    <div className="border border-t"></div>
+  </div>
+);
