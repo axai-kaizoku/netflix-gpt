@@ -13,12 +13,8 @@ export const liveChatSlice = createSlice({
   initialState,
   reducers: {
     setLiveChat: (state, action) => {
-      const newState = [...state, ...action.payload];
-      const randL = Math.floor(Math.random() * 6) + 1000;
-      console.log(randL);
-      if (newState?.length > randL) {
-        newState?.splice(0, newState?.length - randL);
-      }
+      const newState = [...action.payload, ...state];
+      newState.splice(30, 1);
       return newState;
     },
     addChatMessage: (state, action) => {
