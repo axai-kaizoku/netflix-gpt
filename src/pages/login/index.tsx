@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuthUser } from "@/hooks/use-auth-state";
 import { cn } from "@/lib/utils";
 import { NETFLIX_AVATAR, NETFLIX_BG, NETFLIX_LOGO } from "@/utils/constants";
 import { loginUser, signUpUser, updateUser as updateUserFirebase } from "@/utils/firebase/userActions";
 import { updateUser } from "@/utils/store/slices/userSlice";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 
@@ -21,6 +22,14 @@ interface FormData {
 }
 
 export default function Login() {
+  const user = useAuthUser();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user) {
+      navigate("/browse");
+    }
+  }, [user]);
+
   return (
     <main className={`w-full relative flex flex-col bg-[url(${NETFLIX_BG})] bg-cover`}>
       <header className="w-full px-20 bg-gradient-to-b from-black">

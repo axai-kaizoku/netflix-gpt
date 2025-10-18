@@ -16,7 +16,9 @@ export const Header = ({ children }: PropsWithChildren) => {
       </Link>
       <div className="flex gap-2 items-center">
         {children}
-        <img src={user?.photoURL ?? NETFLIX_AVATAR} alt="Avatar" width={50} height={10} />
+        <Link to={"/demo"}>
+          <img src={user?.photoURL ?? NETFLIX_AVATAR} alt="Avatar" width={50} height={10} />
+        </Link>
         <Button
           size={"sm"}
           onClick={() => {
