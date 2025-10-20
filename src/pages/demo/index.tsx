@@ -2,7 +2,7 @@ import { Header } from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn, fibonacci } from "@/lib/utils";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export default function Demo() {
   return (
@@ -25,7 +25,9 @@ const Demo1 = () => {
   const [name, setName] = useState(0);
   const themeSwitch = useState(false);
 
-  const number = useMemo(() => fibonacci(name), [name]);
+  const number = useMemo(() => {
+    if (!Number.isNaN(name)) return fibonacci(name);
+  }, [name]);
 
   return (
     <div className="mx-auto relative w-96 h-96 mt-8">
@@ -58,7 +60,10 @@ const Demo1 = () => {
               }
             }}
             type="number"
-            onChange={(e) => setName(parseInt(e.target.value))}
+            onChange={(e) => {
+              console.log(e.target.value);
+              setName(parseInt(e.target.value));
+            }}
             placeholder="Heyy, enter your name and hit ↲"
             autoComplete="off"
           />
@@ -70,6 +75,24 @@ const Demo1 = () => {
 };
 
 const Demo2 = () => {
+  const [y, setY] = useState(0);
+  let x = 10;
+
+  const ref = useRef(0);
+
+  const timer = useRef<NodeJS.Timeout | null>(null);
+  console.log(timer.current);
+
+  useEffect(() => {
+    timer.current = setInterval(() => {
+      console.log("Timer", Date.now());
+    }, 1000);
+
+    return () => {
+      clearInterval(timer.current!);
+    };
+  }, []);
+
   return (
     <div className="mx-auto relative w-96 h-96 mt-8">
       <div className="absolute overflow-hidden   bg-neutral-50/80 w-full h-full top-0 ">
@@ -81,6 +104,50 @@ const Demo2 = () => {
       </div>
       <div className="w-full h-full  bg-neutral-800  p-4 space-y-4 -translate-3 duration-300  transition-all active:translate-0">
         <h1 className="text-2xl font-semibold">useRef</h1>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              x = x + 1;
+              console.log(x);
+            }}
+          >
+            Increase X
+          </Button>
+          <span>Let x = {x}</span>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              setY(y + 1);
+            }}
+          >
+            Increase Y
+          </Button>
+          <span>state y = {y}</span>
+        </div>
+
+        <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              ref.current++;
+              // console.log(ref.current);
+            }}
+          >
+            Increase Ref
+          </Button>
+          <span>Ref = {ref.current}</span>
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant={"destructive"}
+            onClick={() => {
+              clearInterval(timer.current!);
+            }}
+          >
+            Clear Timer
+          </Button>
+          {JSON.stringify(timer.current)}
+        </div>
       </div>
     </div>
   );

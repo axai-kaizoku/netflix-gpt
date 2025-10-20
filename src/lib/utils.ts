@@ -101,7 +101,10 @@ export function getRandomName() {
   return names[Math.floor(Math.random() * names.length)];
 }
 
-export const fibonacci = (n: number): number => {
+export const fibonacci = (n = 0): number => {
+  if (n === 0) {
+    return 0;
+  }
   if (n <= 1) {
     return n;
   }
